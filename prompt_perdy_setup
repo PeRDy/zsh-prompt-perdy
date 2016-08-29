@@ -8,33 +8,33 @@
 pmodload 'helper'
 
 # Truncate the PWD display, if needed.
-function prompt_pwd {
+function prompt_perdy_pwd {
   local pwd="${PWD/#$HOME/~}"
 
   # PWD will fit.
   if [[ "$pwd" == (#m)[/~] ]]; then
-    prompt_current_dir="${prompt_color_pwd}$MATCH"
+    prompt_perdy_current_dir="${prompt_perdy_color_pwd}$MATCH"
     unset MATCH
 
   # PWD needs truncation.
   else
-    prompt_current_dir="${prompt_color_pwd}${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}/${pwd:t}"
+    prompt_perdy_current_dir="${prompt_perdy_color_pwd}${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}/${pwd:t}"
   fi
 }
 
 # Notify of command completion after n seconds has passed.
-function prompt_precmd_notification {
+function prompt_perdy_precmd_notification {
 
   # Trigger a notification after n seconds have elapsed.
-  prompt_delay_after_notification=5
+  prompt_perdy_delay_after_notification=5
 
   # Determine time elapsed.
-  prompt_precmd_time_elapsed_start=${prompt_preexec_time:-$(date +'%s')}
-  prompt_precmd_time_elapsed_stop=$(date +'%s')
-  let prompt_precmd_time_elapsed=$prompt_precmd_time_elapsed_stop-$prompt_precmd_time_elapsed_start
+  prompt_perdy_precmd_time_elapsed_start=${prompt_perdy_preexec_time:-$(date +'%s')}
+  prompt_perdy_precmd_time_elapsed_stop=$(date +'%s')
+  let prompt_perdy_precmd_time_elapsed=$prompt_perdy_precmd_time_elapsed_stop-$prompt_perdy_precmd_time_elapsed_start
 
   # n seconds have passed, so notify!
-  if [ $prompt_precmd_time_elapsed -gt $prompt_delay_after_notification ]; then
+  if [ $prompt_perdy_precmd_time_elapsed -gt $prompt_perdy_delay_after_notification ]; then
 
     # Notify via tput while on ssh.
     if [[ -n "$SSH_CLIENT" || -n "$SSH2_CLIENT" ]]; then
@@ -46,22 +46,22 @@ function prompt_precmd_notification {
       # On OS X, notify with terminal-notifier.
       if [[ "$OSTYPE" == darwin* ]] && (( $+commands[terminal-notifier] )); then
         terminal-notifier \
-          -title "${prompt_preexec_cmd:-Unknown command}" \
-          -message "Required $prompt_precmd_time_elapsed s" \
+          -title "${prompt_perdy_preexec_cmd:-Unknown command}" \
+          -message "Required $prompt_perdy_precmd_time_elapsed s" \
           -sound Tink
 
       # On OS X, notify with growlnotify.
       elif [[ "$OSTYPE" == darwin* ]] && (( $+commands[growlnotify] )); then
         growlnotify \
           -n "Terminal" \
-          -t "${prompt_preexec_cmd:-Unknown command}" \
-          -m "Required $prompt_precmd_time_elapsed s"
+          -t "${prompt_perdy_preexec_cmd:-Unknown command}" \
+          -m "Required $prompt_perdy_precmd_time_elapsed s"
 
       # On linux, notify with notify-send.
       elif [[ "$OSTYPE" == linux-gnu ]] && (( $+commands[notify-send] )); then
         notify-send \
-          "${prompt_preexec_cmd:-Unknown command}" \
-          "Required $prompt_precmd_time_elapsed s"
+          "${prompt_perdy_preexec_cmd:-Unknown command}" \
+          "Required $prompt_perdy_precmd_time_elapsed s"
 
       # Notify via tput.
       else
@@ -72,7 +72,7 @@ function prompt_precmd_notification {
 }
 
 # A function executed whenever the directory is changed.
-function prompt_chpwd {
+function prompt_perdy_chpwd {
 
   # List the contents of the new directory.
   if is-callable 'dircolors'; then
@@ -95,29 +95,29 @@ function prompt_chpwd {
 }
 
 # Functions called before command execution.
-function prompt_preexec {
+function prompt_perdy_preexec {
 
   # Define timer and command for notification.
-  export prompt_preexec_time=$(date +'%s')
-  export prompt_preexec_cmd="\$ $1"
+  export prompt_perdy_preexec_time=$(date +'%s')
+  export prompt_perdy_preexec_cmd="\$ $1"
 
   # Ensure terminal code isn't colored from prompt.
   print -n "$reset_color"
 }
 
 # Functions called before each prompt is displayed.
-function prompt_precmd {
+function prompt_perdy_precmd {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
 
   # Show number of background jobs.
-  prompt_number_jobs="%(1j.${prompt_color_prompt}J:${cyan}%j .)"
+  prompt_perdy_number_jobs="%(1j.${prompt_perdy_color_prompt}J:${cyan}%j .)"
 
   # Format PWD.
-  prompt_pwd
+  prompt_perdy_pwd
 
   # Trigger a notification after x time has elapsed.
-  eval prompt_precmd_notification
+  eval prompt_perdy_precmd_notification
 
   # Get Git repository info.
   if (( $+functions[git-info] )); then
@@ -133,18 +133,18 @@ function prompt_precmd {
   # Report Git status
   #
   if [[ -n $git_info ]]; then
-    local prompt_git="[ ${git_info[remote_status]}${git_info[prompt_info]}${git_info[local_status]}${git_info[sha]} ]"
+    local prompt_perdy_git="[ ${git_info[remote_status]}${git_info[prompt_perdy_info]}${git_info[local_status]}${git_info[sha]} ]"
   else
-    local prompt_git=''
+    local prompt_perdy_git=''
   fi
 
   #
   # Report Python virtualenv
   #
   if [[ -n $python_info ]]; then
-    local prompt_python="[ $python_info[virtualenv] ]"
+    local prompt_perdy_python="[ $python_info[virtualenv] ]"
   else
-    local prompt_python=''
+    local prompt_perdy_python=''
   fi
 
   #
@@ -152,71 +152,71 @@ function prompt_precmd {
   #
 
   # Determine the width.
-  local prompt_width_terminal
-  (( prompt_width_terminal= ${COLUMNS} - 1 ))
+  local prompt_perdy_width_terminal
+  (( prompt_perdy_width_terminal= ${COLUMNS} - 1 ))
 
-  # Determine the length needed for prompt_space.
-  # NOTE: Be sure not to include the ${(e)prompt_space} portion or it won't work.
-  local prompt_line1="${prompt_upper_left_corner}${prompt_python}( ${prompt_current_dir} )${prompt_git}( ${prompt_location} )${prompt_upper_right_corner}"
+  # Determine the length needed for prompt_perdy_space.
+  # NOTE: Be sure not to include the ${(e)prompt_perdy_space} portion or it won't work.
+  local prompt_perdy_line1="${prompt_perdy_upper_left_corner}${prompt_perdy_python}( ${prompt_perdy_current_dir} )${prompt_perdy_git}( ${prompt_perdy_location} )${prompt_perdy_upper_right_corner}"
   local zero='%([BSUbfksu]|([FB]|){*})'
-  local prompt_width_line1=${#${(S%%)prompt_line1//$~zero/}}
+  local prompt_perdy_width_line1=${#${(S%%)prompt_perdy_line1//$~zero/}}
 
   # Calculate the padding.
-  local prompt_space_padding
-  (( prompt_space_padding= ${prompt_width_terminal} - ${prompt_width_line1} ))
+  local prompt_perdy_space_padding
+  (( prompt_perdy_space_padding= ${prompt_perdy_width_terminal} - ${prompt_perdy_width_line1} ))
 
   # Add the correct number of characters.
-  local prompt_space_character="${prompt_altchar_padding}"
-  eval prompt_space="${prompt_color_prompt}\${(l.${prompt_space_padding}..${prompt_space_character}.)}"
+  local prompt_perdy_space_character="${prompt_perdy_altchar_padding}"
+  eval prompt_perdy_space="${prompt_perdy_color_prompt}\${(l.${prompt_perdy_space_padding}..${prompt_perdy_space_character}.)}"
 
   # Prompt line 1 (set above PROMPT, below).
-  print -P '${prompt_altchar_enable}${prompt_color_prompt}${prompt_upper_left_corner}${prompt_python}( ${prompt_current_dir} ${prompt_color_prompt})${prompt_git}${prompt_altchar_enter}${(e)prompt_space}${prompt_altchar_leave}( ${prompt_location}${prompt_color_prompt} )${prompt_upper_right_corner}'
+  print -P '${prompt_perdy_altchar_enable}${prompt_perdy_color_prompt}${prompt_perdy_upper_left_corner}${prompt_perdy_python}( ${prompt_perdy_current_dir} ${prompt_perdy_color_prompt})${prompt_perdy_git}${prompt_perdy_altchar_enter}${(e)prompt_perdy_space}${prompt_perdy_altchar_leave}( ${prompt_perdy_location}${prompt_perdy_color_prompt} )${prompt_perdy_upper_right_corner}'
 }
 
-function prompt_user {
+function prompt_perdy_user {
   # Root user.
   if [[ "$EUID" = "0" ]] || [[ "$USER" = 'root' ]]; then
 
     # Set colors.
-    eval prompt_color_user=${3:-'${red}'}
-    eval prompt_color_host=${3:-'${red}'}
-    eval prompt_color_prompt=${3:-'${red}'}
+    eval prompt_perdy_color_user=${3:-'${red}'}
+    eval prompt_perdy_color_host=${3:-'${red}'}
+    eval prompt_perdy_color_prompt=${3:-'${red}'}
 
     # Set style.
-    eval prompt_user='%S${prompt_color_user}%n%s'
-    eval prompt_host='${prompt_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
-    eval prompt_location='${prompt_user}${cyan}@${prompt_host}' # user@host.name
+    eval prompt_perdy_user='%S${prompt_perdy_color_user}%n%s'
+    eval prompt_perdy_host='${prompt_perdy_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
+    eval prompt_perdy_location='${prompt_perdy_user}${cyan}@${prompt_perdy_host}' # user@host.name
 
   # On SSH.
   elif [[ -n "$SSH_CLIENT" || -n "$SSH2_CLIENT" ]]; then
 
     # Set colors.
-    eval prompt_color_user=${3:-'${green}'}
-    eval prompt_color_host=${3:-'${yellow}'}
-    eval prompt_color_prompt=${3:-'${yellow}'}
+    eval prompt_perdy_color_user=${3:-'${green}'}
+    eval prompt_perdy_color_host=${3:-'${yellow}'}
+    eval prompt_perdy_color_prompt=${3:-'${yellow}'}
 
     # Set style.
-    eval prompt_user='%S${prompt_color_user}%n%s'
-    eval prompt_host='${prompt_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
-    eval prompt_location='${prompt_user}${cyan}@${prompt_host}' # user@host.name
+    eval prompt_perdy_user='%S${prompt_perdy_color_user}%n%s'
+    eval prompt_perdy_host='${prompt_perdy_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
+    eval prompt_perdy_location='${prompt_perdy_user}${cyan}@${prompt_perdy_host}' # user@host.name
 
   # Normal user.
   else
 
     # Set colors.
-    eval prompt_color_user=${1:-'${green}'}
-    eval prompt_color_host=${1:-'${green}'}
-    eval prompt_color_prompt=${1:-'${grey}'}
+    eval prompt_perdy_color_user=${1:-'${green}'}
+    eval prompt_perdy_color_host=${1:-'${green}'}
+    eval prompt_perdy_color_prompt=${1:-'${grey}'}
 
     # Set style.
-    eval prompt_user=''
-    eval prompt_host='${prompt_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
-    eval prompt_location='${prompt_user}${cyan}@${prompt_host}' # user@host.name
+    eval prompt_perdy_user=''
+    eval prompt_perdy_host='${prompt_perdy_color_host}%m' # hostname up to first . (dot) (use %M for full hostname)
+    eval prompt_perdy_location='${prompt_perdy_user}${cyan}@${prompt_perdy_host}' # user@host.name
   fi
 
 }
 
-function prompt_prezto_style {
+function prompt_perdy_prezto_style {
   #
   # Report git info.
   # NOTE: Listed in order in which the information will appear in the prompt.
@@ -226,13 +226,13 @@ function prompt_prezto_style {
   # zstyle ':prezto:module:git:info' verbose 'yes'
 
   # Git prompt info.
-  zstyle ':prezto:module:git:info:branch'    format "${cyan}${prompt_color_prompt}:${green}%b"
+  zstyle ':prezto:module:git:info:branch'    format "${cyan}${prompt_perdy_color_prompt}:${green}%b"
   zstyle ':prezto:module:git:info:remote'    format ""
   zstyle ':prezto:module:git:info:action'    format "${yellow} %s"
   zstyle ':prezto:module:git:info:position'  format "${red} %p"
 
   # Git commit SHA.
-  zstyle ':prezto:module:git:info:commit'    format "${yellow} %.7c${prompt_color_prompt}"
+  zstyle ':prezto:module:git:info:commit'    format "${yellow} %.7c${prompt_perdy_color_prompt}"
 
   # Git remote status.
   zstyle ':prezto:module:git:info:behind'    format "${magenta}⬇ "
@@ -242,7 +242,7 @@ function prompt_prezto_style {
 
   # Git local status.
   zstyle ':prezto:module:git:info:clean'     format ""
-  zstyle ':prezto:module:git:info:dirty'     format "${prompt_color_prompt} | "
+  zstyle ':prezto:module:git:info:dirty'     format "${prompt_perdy_color_prompt} | "
   zstyle ':prezto:module:git:info:added'     format "${green}✚"
   zstyle ':prezto:module:git:info:deleted'   format "${red}✗"
   zstyle ':prezto:module:git:info:modified'  format "${blue}✱"
@@ -252,7 +252,7 @@ function prompt_prezto_style {
 
   # Git prompt styles.
   zstyle ':prezto:module:git:info:keys' format \
-    'prompt_info'    "%b" \
+    'prompt_perdy_info'    "%b" \
     'rprompt'        "%R" \
     'local_status'   "%C%D%a%d%m%r%U%u" \
     'remote_status'  "%B%A%S" \
@@ -261,14 +261,14 @@ function prompt_prezto_style {
   #
   # Report Python virtualenv
   #
-  zstyle ':prezto:module:python:info:virtualenv' format "${yellow}ⓥ %v${prompt_color_prompt}"
+  zstyle ':prezto:module:python:info:virtualenv' format "${yellow}ⓥ %v${prompt_perdy_color_prompt}"
 
   #
   # Command line editor info.
   #
 
   # Base style.
-  zstyle ':prezto:module:editor:info:keymap:primary' format "${cyan}❱%(?.${prompt_color_prompt}.${red})❱❱ "
+  zstyle ':prezto:module:editor:info:keymap:primary' format "${cyan}❱%(?.${prompt_perdy_color_prompt}.${red})❱❱ "
 
   # Vim insert mode.
   # zstyle ':prezto:module:editor:info:keymap:primary:insert' format "${red}I "
@@ -277,25 +277,25 @@ function prompt_prezto_style {
   zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format "${red}♺ "
 
   # Vim normal (command) mode.
-  zstyle ':prezto:module:editor:info:keymap:alternate' format "${cyan}❰%(?.${prompt_color_prompt}.${red})❰❰ "
+  zstyle ':prezto:module:editor:info:keymap:alternate' format "${cyan}❰%(?.${prompt_perdy_color_prompt}.${red})❰❰ "
 
   # Tab completion mode.
   zstyle ':prezto:module:editor:info:completing' format "${red}..."
 }
 
 # Configure the prompt.
-function prompt_setup {
+function prompt_perdy_setup {
 
   # Load necessary modules.
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
-  prompt_opts=(cr percent subst)
+  prompt_perdy_opts=(cr percent subst)
 
   # Add hooks for calling preexec, precmd & chpwd.
   autoload -Uz add-zsh-hook
-  add-zsh-hook preexec prompt_preexec
-  add-zsh-hook precmd prompt_precmd
-  add-zsh-hook chpwd prompt_chpwd
+  add-zsh-hook preexec prompt_perdy_preexec
+  add-zsh-hook precmd prompt_perdy_precmd
+  add-zsh-hook chpwd prompt_perdy_chpwd
 
   #
   # Colors
@@ -313,25 +313,25 @@ function prompt_setup {
   done
 
   # Color scheme.
-  eval prompt_color_pwd=\$\{${2:-'${blue}'}\}
-  eval prompt_color_line_number=${5:-'${magenta}'}
-  eval prompt_color_time=${6:-'${green}'}
-  eval prompt_color_git_branch=${7:-'${green}'}
-  eval prompt_color_git_sha=${8:-'${yellow}'}
+  eval prompt_perdy_color_pwd=\$\{${2:-'${blue}'}\}
+  eval prompt_perdy_color_line_number=${5:-'${magenta}'}
+  eval prompt_perdy_color_time=${6:-'${green}'}
+  eval prompt_perdy_color_git_branch=${7:-'${green}'}
+  eval prompt_perdy_color_git_sha=${8:-'${yellow}'}
 
   # Determine prompt, user and host colors.
-  prompt_user
+  prompt_perdy_user
   
   # Report return code.
-  eval prompt_return_code='%(?..${red}%? ⏎  ) '
+  eval prompt_perdy_return_code='%(?..${red}%? ⏎  ) '
 
   # Report local time.
-  eval prompt_current_time='${green}%*'    # 24 hour time format, second precise
-  # eval prompt_current_time='${green}%T'    # 24 hour time format
-  # eval prompt_current_time='${green}%t'    # AM/PM time format
+  eval prompt_perdy_current_time='${green}%*'    # 24 hour time format, second precise
+  # eval prompt_perdy_current_time='${green}%T'    # 24 hour time format
+  # eval prompt_perdy_current_time='${green}%t'    # AM/PM time format
 
   # Report terminal line number.
-  eval prompt_line_number='${green}+${magenta}%!'
+  eval prompt_perdy_line_number='${green}+${magenta}%!'
   
   #
   # Use the extended character set, if available.
@@ -339,42 +339,42 @@ function prompt_setup {
   typeset -A altchar
   set -A altchar ${(s..)terminfo[acsc]}
 
-  prompt_altchar_enable="%{$terminfo[enacs]%}"
-  prompt_altchar_enter="%{$terminfo[smacs]%}"
-  prompt_altchar_leave="%{$terminfo[rmacs]%}"
+  prompt_perdy_altchar_enable="%{$terminfo[enacs]%}"
+  prompt_perdy_altchar_enter="%{$terminfo[smacs]%}"
+  prompt_perdy_altchar_leave="%{$terminfo[rmacs]%}"
 
   # Character used to draw line.
-  prompt_altchar_padding=${altchar[q]:--}
+  prompt_perdy_altchar_padding=${altchar[q]:--}
 
   # Upper left corner: ┌
-  prompt_upper_left_corner=${prompt_altchar_enter}${altchar[l]:--}${altchar[q]:--}${prompt_altchar_leave}
+  prompt_perdy_upper_left_corner=${prompt_perdy_altchar_enter}${altchar[l]:--}${altchar[q]:--}${prompt_perdy_altchar_leave}
 
   # Upper right corner: ┐
-  prompt_upper_right_corner=${prompt_altchar_enter}${altchar[q]:--}${altchar[k]:--}${prompt_altchar_leave}
+  prompt_perdy_upper_right_corner=${prompt_perdy_altchar_enter}${altchar[q]:--}${altchar[k]:--}${prompt_perdy_altchar_leave}
 
   # Lower left corner: └
-  prompt_lower_left_corner=${prompt_altchar_enter}${altchar[m]:--}${altchar[q]:--}${prompt_altchar_leave}
+  prompt_perdy_lower_left_corner=${prompt_perdy_altchar_enter}${altchar[m]:--}${altchar[q]:--}${prompt_perdy_altchar_leave}
 
   # Upper right corner: ┘
-  prompt_lower_right_corner=${prompt_altchar_enter}${altchar[q]:--}${altchar[j]:--}${prompt_altchar_leave}
+  prompt_perdy_lower_right_corner=${prompt_perdy_altchar_enter}${altchar[q]:--}${altchar[j]:--}${prompt_perdy_altchar_leave}
 
   # Define prezto style
-  prompt_prezto_style
+  prompt_perdy_prezto_style
 
   #
   # Print out the prompt.
   #
   # Left prompt; base shell level.
   if (( $SHLVL == 1 )); then
-    export PROMPT='${prompt_altchar_enable}${prompt_color_prompt}${prompt_lower_left_corner}${editor_info[keymap]}'
+    export PROMPT='${prompt_perdy_altchar_enable}${prompt_perdy_color_prompt}${prompt_perdy_lower_left_corner}${editor_info[keymap]}'
 
   # Left prompt; nested shell level.
   else
-    export PROMPT='${prompt_color_prompt}${prompt_lower_left_corner}( ${cyan}$SHLVL ${prompt_color_prompt})${editor_info[keymap]}'
+    export PROMPT='${prompt_perdy_color_prompt}${prompt_perdy_lower_left_corner}( ${cyan}$SHLVL ${prompt_perdy_color_prompt})${editor_info[keymap]}'
   fi
 
   # Right prompt.
-  export RPROMPT='${editor_info[alternate]}${editor_info[overwrite]}${prompt_return_code}${prompt_number_jobs}${prompt_line_number} ${prompt_current_time} %(?.${prompt_color_prompt}.${red})❰${prompt_color_prompt}${prompt_lower_right_corner}'
+  export RPROMPT='${editor_info[alternate]}${editor_info[overwrite]}${prompt_perdy_return_code}${prompt_perdy_number_jobs}${prompt_perdy_line_number} ${prompt_perdy_current_time} %(?.${prompt_perdy_color_prompt}.${red})❰${prompt_perdy_color_prompt}${prompt_perdy_lower_right_corner}'
 
   # Continuation prompt.
   export PROMPT2='(%_) ${editor_info[keymap]}'
@@ -388,11 +388,11 @@ function prompt_setup {
 
   # Autocorrection prompt.
   export SPROMPT='
-${prompt_color_prompt}Correct ${red}%R${prompt_color_prompt} to ${green}%r${prompt_color_prompt} ? [nyae] '
+${prompt_perdy_color_prompt}Correct ${red}%R${prompt_perdy_color_prompt} to ${green}%r${prompt_perdy_color_prompt} ? [nyae] '
 
   # Backup root prompt for Bash.
   # export SUDO_PS1="\[\u@\h\] \w \$ "
 }
 
-prompt_setup "$@"
+prompt_perdy_setup "$@"
 
