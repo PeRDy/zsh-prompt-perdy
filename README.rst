@@ -16,4 +16,5 @@ This is a modified version of `Garrett Prezto theme <https://github.com/chauncey
 * Add Python virtualenv info.
 * Change default fallback to superuser shell.
 * Split pwd and git status into two different sections.
+* Change pwd to show whole dir names.
 * Refactor some parts of setup function to make more readable.
