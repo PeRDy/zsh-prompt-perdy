@@ -216,7 +216,7 @@ function prompt_perdy_prezto_style {
   # zstyle ':prezto:module:git:info' verbose 'yes'
 
   # Git prompt info.
-  zstyle ':prezto:module:git:info:branch'    format "${cyan}${_prompt_perdy_color_prompt}:${green}%b"
+  zstyle ':prezto:module:git:info:branch'    format "${cyan}${_prompt_perdy_color_prompt} ${green}%b"
   zstyle ':prezto:module:git:info:remote'    format ""
   zstyle ':prezto:module:git:info:action'    format "${yellow} %s"
   zstyle ':prezto:module:git:info:position'  format "${red} %p"
